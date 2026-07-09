@@ -21,7 +21,7 @@ public class GameHUD : MonoBehaviour
 
         backButton.onClick.AddListener(OnBackClicked);
         clearButton.onClick.AddListener(OnClearClicked);
-        muteButton.onClick.AddListener(OnMuteClicked);
+        muteButton.onClick.AddListener(OnSettingsClicked);
 
         UpdateMuteLabel();
 
@@ -30,6 +30,11 @@ public class GameHUD : MonoBehaviour
             InkManager.Instance.OnInkChanged += HandleInkChanged;
             HandleInkChanged(InkManager.Instance.UsedInk, InkManager.Instance.MaxInk);
         }
+    }
+
+    private void OnSettingsClicked()
+    {
+        SettingsPanel.Open();
     }
 
     private void OnDestroy()
@@ -64,16 +69,9 @@ public class GameHUD : MonoBehaviour
             gameManager.RestartLevel();
     }
 
-    private void OnMuteClicked()
-    {
-        if (SoundManager.Instance != null)
-            SoundManager.Instance.ToggleSfxMute();
-        UpdateMuteLabel();
-    }
-
     private void UpdateMuteLabel()
     {
-        if (SoundManager.Instance == null) return;
-        muteLabel.text = SoundManager.Instance.SfxMuted ? "OFF" : "ON";
+        if (muteLabel != null)
+            muteLabel.text = "=";
     }
 }

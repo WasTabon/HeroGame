@@ -149,6 +149,8 @@ public class Enemy : MonoBehaviour
     {
         isDead = true;
 
+        if (CameraShake.Instance != null)
+            CameraShake.Instance.Shake(0.5f, 0.3f);
 
         SimpleParticleBurst.Spawn(transform.position, baseColor, 10, 2f);
 

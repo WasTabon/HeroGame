@@ -70,4 +70,25 @@ public class DrawnObject : MonoBehaviour
         if (HapticManager.Instance != null)
             HapticManager.Instance.Light();
     }
+
+    private float lastImpactTime;
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (Time.time - lastImpactTime < 0.15f) return;
+
+        float impact = collision.relativeVelocity.magnitude;
+        if (impact < 4f) return;
+
+        lastImpactTime = Time.time;
+
+        Vector2 point = collision.GetContact(0).point;
+        SimpleParticleBurst.Spawn(point, new Color(1f, 1f, 1f, 0.6f), 4, 0.8f);
+
+        if (impact > 9f && CameraShake.Instance != null)
+            CameraShake.Instance.Shake(0.2f, 0.15f);
+
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySfx("click", 0.6f);
+    }
 }

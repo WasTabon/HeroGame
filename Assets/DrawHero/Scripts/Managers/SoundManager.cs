@@ -13,6 +13,7 @@ public class SoundManager : MonoBehaviour
     private int poolIndex;
 
     private AudioSource musicSource;
+    private AudioClip ambientClip;
 
     private Dictionary<string, AudioClip> clips = new Dictionary<string, AudioClip>();
 
@@ -35,6 +36,8 @@ public class SoundManager : MonoBehaviour
 
         BuildPool();
         BuildClips();
+        BuildAmbient();
+        StartAmbient();
     }
 
     private void OnDestroy()
@@ -111,6 +114,52 @@ public class SoundManager : MonoBehaviour
         SfxMuted = !SfxMuted;
         PlayerPrefs.SetInt(MUTE_SFX_KEY, SfxMuted ? 1 : 0);
         PlayerPrefs.Save();
+    }
+
+    private void BuildAmbient()
+    {
+        int sampleRate = 44100;
+        float duration = 12f;
+        int sampleCount = (int)(sampleRate * duration);
+        ambientClip = AudioClip.Create("ambient", sampleCount, 1, sampleRate, false);
+        float[] samples = new float[sampleCount];
+
+        float[] baseFreqs = { 110f, 146.83f, 220f, 164.81f };
+        float[] lfoRates = { 0.05f, 0.07f, 0.03f, 0.09f };
+
+        for (int i = 0; i < sampleCount; i++)
+        {
+            float t = (float)i / sampleRate;
+            float sample = 0f;
+
+            for (int v = 0; v < baseFreqs.Length; v++)
+            {
+                float lfo = 0.5f + 0.5f * Mathf.Sin(2f * Mathf.PI * lfoRates[v] * t);
+                sample += Mathf.Sin(2f * Mathf.PI * baseFreqs[v] * t) * lfo;
+            }
+
+            sample /= baseFreqs.Length;
+            samples[i] = sample * 0.18f;
+        }
+
+        int fade = (int)(sampleRate * 1.5f);
+        for (int i = 0; i < fade; i++)
+        {
+            float f = (float)i / fade;
+            samples[i] *= f;
+            samples[sampleCount - 1 - i] *= f;
+        }
+
+        ambientClip.SetData(samples, 0);
+    }
+
+    private void StartAmbient()
+    {
+        musicSource.clip = ambientClip;
+        musicSource.loop = true;
+        musicSource.volume = 0.5f;
+        musicSource.mute = MusicMuted;
+        musicSource.Play();
     }
 
     public void ToggleMusicMute()
