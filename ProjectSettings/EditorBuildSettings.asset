@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
+    path: Assets/DrawHero/Scenes/Boot.unity
+    guid: 9fb5a36c197a40b43b30fd2df0eab6aa
+  - enabled: 1
+    path: Assets/DrawHero/Scenes/MainMenu.unity
+    guid: 8d0ccb100fe7cc2468317d5e3af49cc5
+  - enabled: 1
+    path: Assets/DrawHero/Scenes/LevelMap.unity
+    guid: 05cc2177226c01b498801f4e0fa321f9
+  - enabled: 1
+    path: Assets/DrawHero/Scenes/Game.unity
+    guid: 21edc601ab0525c4fb04d3696e576e83
   m_configObjects: {}
