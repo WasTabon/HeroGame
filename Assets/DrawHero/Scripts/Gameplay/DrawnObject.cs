@@ -52,7 +52,7 @@ public class DrawnObject : MonoBehaviour
             capsule.size = new Vector2(segLength + LineThickness, LineThickness);
 
             SpriteRenderer sr = segGo.AddComponent<SpriteRenderer>();
-            sr.sprite = GetSquareSprite();
+            sr.sprite = PrimitiveSprites.Square();
             sr.color = color;
             sr.drawMode = SpriteDrawMode.Sliced;
             sr.size = new Vector2(segLength + LineThickness, LineThickness);
@@ -69,23 +69,5 @@ public class DrawnObject : MonoBehaviour
 
         if (HapticManager.Instance != null)
             HapticManager.Instance.Light();
-    }
-
-    private static Sprite squareSprite;
-
-    private static Sprite GetSquareSprite()
-    {
-        if (squareSprite != null) return squareSprite;
-
-        Texture2D tex = new Texture2D(4, 4);
-        Color[] pixels = new Color[16];
-        for (int i = 0; i < 16; i++)
-            pixels[i] = Color.white;
-        tex.SetPixels(pixels);
-        tex.Apply();
-        tex.filterMode = FilterMode.Bilinear;
-
-        squareSprite = Sprite.Create(tex, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 4, 0, SpriteMeshType.FullRect, new Vector4(2, 2, 2, 2));
-        return squareSprite;
     }
 }

@@ -37,6 +37,15 @@ public class Enemy : MonoBehaviour
         BuildHealthBar();
     }
 
+    private void Start()
+    {
+        LevelController controller = FindObjectOfType<LevelController>();
+        if (controller != null)
+            controller.RegisterEnemy(this);
+        else
+            Debug.LogWarning("[DrawHero] Enemy could not find LevelController to register!");
+    }
+
     private void BuildHealthBar()
     {
         GameObject canvasGo = new GameObject("HPCanvas");
@@ -102,6 +111,7 @@ public class Enemy : MonoBehaviour
 
         currentHP -= amount;
 
+
         if (hpFill != null)
         {
             float ratio = Mathf.Clamp01(currentHP / maxHP);
@@ -138,6 +148,7 @@ public class Enemy : MonoBehaviour
     private void Die()
     {
         isDead = true;
+
 
         SimpleParticleBurst.Spawn(transform.position, baseColor, 10, 2f);
 
