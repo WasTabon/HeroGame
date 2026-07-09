@@ -8,9 +8,17 @@ public class DrawnObject : MonoBehaviour
     public static float MassPerUnit = 0.35f;
 
     private Rigidbody2D body;
+    private bool isBomb;
+    private bool bombTriggered;
 
     public void Build(List<Vector2> worldPoints, Color color)
     {
+        Build(worldPoints, color, false, false);
+    }
+
+    public void Build(List<Vector2> worldPoints, Color color, bool heavy, bool bomb)
+    {
+        isBomb = bomb;
         gameObject.layer = LayerMask.NameToLayer("Default");
 
         body = gameObject.AddComponent<Rigidbody2D>();
@@ -53,13 +61,15 @@ public class DrawnObject : MonoBehaviour
 
             SpriteRenderer sr = segGo.AddComponent<SpriteRenderer>();
             sr.sprite = PrimitiveSprites.Square();
-            sr.color = color;
+            sr.color = bomb ? new Color(0.9f, 0.3f, 0.2f) : (heavy ? new Color(0.5f, 0.5f, 0.6f) : color);
             sr.drawMode = SpriteDrawMode.Sliced;
             sr.size = new Vector2(segLength + LineThickness, LineThickness);
             sr.sortingOrder = 5;
         }
 
         body.mass = Mathf.Max(0.5f, totalLength * MassPerUnit);
+        if (heavy)
+            body.mass *= 2f;
 
         transform.localScale = Vector3.one * 0.8f;
         transform.DOScale(1f, 0.25f).SetEase(Ease.OutBack);
@@ -90,5 +100,45 @@ public class DrawnObject : MonoBehaviour
 
         if (SoundManager.Instance != null)
             SoundManager.Instance.PlaySfx("click", 0.6f);
+
+        if (isBomb && !bombTriggered && impact > 5f)
+        {
+            bombTriggered = true;
+            Explode();
+        }
+    }
+
+    private void Explode()
+    {
+        Vector2 center = transform.position;
+        float radius = 3f;
+
+        SimpleParticleBurst.Spawn(center, new Color(1f, 0.6f, 0.2f), 16, 3f);
+
+        if (CameraShake.Instance != null)
+            CameraShake.Instance.Shake(0.7f, 0.4f);
+
+        if (SoundManager.Instance != null)
+            SoundManager.Instance.PlaySfx("pop", 0.5f);
+
+        if (HapticManager.Instance != null)
+            HapticManager.Instance.Heavy();
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(center, radius);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Enemy enemy = hits[i].GetComponentInParent<Enemy>();
+            if (enemy != null && !enemy.IsDead)
+                enemy.TakeDamage(100f);
+
+            Rigidbody2D rb = hits[i].attachedRigidbody;
+            if (rb != null && rb.bodyType == RigidbodyType2D.Dynamic)
+            {
+                Vector2 dir = ((Vector2)rb.transform.position - center).normalized;
+                rb.AddForce(dir * 15f, ForceMode2D.Impulse);
+            }
+        }
+
+        Destroy(gameObject, 0.05f);
     }
 }

@@ -101,9 +101,14 @@ public class DrawingController : MonoBehaviour
 
         float length = GetPathLength();
 
+        bool heavy = PowerUpManager.HeavyNextDraw;
+        bool bomb = PowerUpManager.BombNextDraw;
+
         GameObject go = new GameObject("DrawnObject");
         DrawnObject drawn = go.AddComponent<DrawnObject>();
-        drawn.Build(new List<Vector2>(points), drawColor);
+        drawn.Build(new List<Vector2>(points), drawColor, heavy, bomb);
+
+        PowerUpManager.ClearPendingDrawFlags();
 
         if (InkManager.Instance != null)
             InkManager.Instance.SpendInk(length);

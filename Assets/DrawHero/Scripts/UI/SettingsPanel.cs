@@ -58,7 +58,7 @@ public class SettingsPanel : MonoBehaviour
         panel.anchorMin = new Vector2(0.5f, 0.5f);
         panel.anchorMax = new Vector2(0.5f, 0.5f);
         panel.pivot = new Vector2(0.5f, 0.5f);
-        panel.sizeDelta = new Vector2(820, 1000);
+        panel.sizeDelta = new Vector2(820, 1200);
         panel.anchoredPosition = Vector2.zero;
 
         CreateLabel(panel, "SETTINGS", 60, Color.white, new Vector2(0, -70), new Vector2(760, 120));
@@ -69,8 +69,9 @@ public class SettingsPanel : MonoBehaviour
 
         RefreshLabels();
 
-        CreateButton(panel, "RESET PROGRESS", new Color(0.7f, 0.3f, 0.3f), new Vector2(0, -330), OnReset);
-        CreateButton(panel, "CLOSE", new Color(0.961f, 0.651f, 0.137f), new Vector2(0, -470), Close);
+        CreateButton(panel, "SHOP", new Color(0.4f, 0.75f, 0.4f), new Vector2(0, -330), OnShop);
+        CreateButton(panel, "RESET PROGRESS", new Color(0.7f, 0.3f, 0.3f), new Vector2(0, -470), OnReset);
+        CreateButton(panel, "CLOSE", new Color(0.961f, 0.651f, 0.137f), new Vector2(0, -610), Close);
 
         panel.localScale = Vector3.zero;
         panel.DOScale(1f, 0.4f).SetEase(Ease.OutBack).SetDelay(0.05f);
@@ -109,6 +110,11 @@ public class SettingsPanel : MonoBehaviour
         if (HapticManager.Instance != null)
             HapticManager.Instance.ToggleHaptic();
         RefreshLabels();
+    }
+
+    private void OnShop()
+    {
+        ShopPanel.Open();
     }
 
     private void OnReset()

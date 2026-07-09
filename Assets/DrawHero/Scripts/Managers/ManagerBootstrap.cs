@@ -23,6 +23,13 @@ public static class ManagerBootstrap
             go.AddComponent<TransitionManager>();
         }
 
+        if (IAPManager.Instance == null)
+        {
+            GameObject go = new GameObject("IAPManager");
+            go.AddComponent<IAPManager>();
+            Object.DontDestroyOnLoad(go);
+        }
+
         Application.targetFrameRate = 60;
     }
 }
