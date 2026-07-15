@@ -23,13 +23,10 @@ public class SetupIteration3
         AttachKillZoneTrigger();
         SpawnTestEnemies();
 
-        ResultPopup popup = BuildResultPopup();
-
         GameObject lc = GameObject.Find("LevelController");
         if (lc == null) lc = new GameObject("LevelController");
-        LevelController controller = lc.GetComponent<LevelController>();
-        if (controller == null) controller = lc.AddComponent<LevelController>();
-        controller.resultPopup = popup;
+        if (lc.GetComponent<LevelController>() == null)
+            lc.AddComponent<LevelController>();
 
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
@@ -88,96 +85,6 @@ public class SetupIteration3
 
         Enemy e = enemy.AddComponent<Enemy>();
         e.maxHP = hp;
-    }
-
-    private static ResultPopup BuildResultPopup()
-    {
-        GameObject canvasGo = GameObject.Find("GameCanvas");
-        if (canvasGo == null)
-        {
-            canvasGo = new GameObject("GameCanvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
-            Canvas c = canvasGo.GetComponent<Canvas>();
-            c.renderMode = RenderMode.ScreenSpaceOverlay;
-            CanvasScaler scaler = canvasGo.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1080, 1920);
-            scaler.matchWidthOrHeight = 0.5f;
-        }
-
-        Transform existing = canvasGo.transform.Find("ResultPopup");
-        if (existing != null)
-            Object.DestroyImmediate(existing.gameObject);
-
-        GameObject popupGo = new GameObject("ResultPopup", typeof(RectTransform));
-        popupGo.transform.SetParent(canvasGo.transform, false);
-        RectTransform popupRt = popupGo.GetComponent<RectTransform>();
-        popupRt.anchorMin = Vector2.zero;
-        popupRt.anchorMax = Vector2.one;
-        popupRt.offsetMin = Vector2.zero;
-        popupRt.offsetMax = Vector2.zero;
-
-        GameObject backdropGo = new GameObject("Backdrop", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
-        backdropGo.transform.SetParent(popupGo.transform, false);
-        backdropGo.GetComponent<Image>().color = Color.black;
-        RectTransform bdRt = backdropGo.GetComponent<RectTransform>();
-        bdRt.anchorMin = Vector2.zero;
-        bdRt.anchorMax = Vector2.one;
-        bdRt.offsetMin = Vector2.zero;
-        bdRt.offsetMax = Vector2.zero;
-        CanvasGroup backdrop = backdropGo.GetComponent<CanvasGroup>();
-
-        GameObject panelGo = new GameObject("Panel", typeof(RectTransform), typeof(Image));
-        panelGo.transform.SetParent(popupGo.transform, false);
-        panelGo.GetComponent<Image>().color = new Color(0.14f, 0.14f, 0.24f, 1f);
-        RectTransform panelRt = panelGo.GetComponent<RectTransform>();
-        panelRt.anchorMin = new Vector2(0.5f, 0.5f);
-        panelRt.anchorMax = new Vector2(0.5f, 0.5f);
-        panelRt.pivot = new Vector2(0.5f, 0.5f);
-        panelRt.sizeDelta = new Vector2(760, 900);
-        panelRt.anchoredPosition = Vector2.zero;
-
-        RectTransform title = CreateText(panelGo.transform, "Title", "LEVEL COMPLETE", 56, ColorText);
-        title.anchorMin = new Vector2(0.5f, 1f);
-        title.anchorMax = new Vector2(0.5f, 1f);
-        title.pivot = new Vector2(0.5f, 1f);
-        title.sizeDelta = new Vector2(700, 140);
-        title.anchoredPosition = new Vector2(0, -60);
-
-        Button nextBtn = CreateButton(panelGo.transform, "NextButton", "NEXT", new Color(0.4f, 0.75f, 0.4f));
-        RectTransform nextRt = nextBtn.GetComponent<RectTransform>();
-        nextRt.anchorMin = new Vector2(0.5f, 0.5f);
-        nextRt.anchorMax = new Vector2(0.5f, 0.5f);
-        nextRt.pivot = new Vector2(0.5f, 0.5f);
-        nextRt.sizeDelta = new Vector2(500, 150);
-        nextRt.anchoredPosition = new Vector2(0, 120);
-
-        Button retryBtn = CreateButton(panelGo.transform, "RetryButton", "RETRY", ColorPrimary);
-        RectTransform retryRt = retryBtn.GetComponent<RectTransform>();
-        retryRt.anchorMin = new Vector2(0.5f, 0.5f);
-        retryRt.anchorMax = new Vector2(0.5f, 0.5f);
-        retryRt.pivot = new Vector2(0.5f, 0.5f);
-        retryRt.sizeDelta = new Vector2(500, 150);
-        retryRt.anchoredPosition = new Vector2(0, -60);
-
-        Button menuBtn = CreateButton(panelGo.transform, "MenuButton", "MENU", ColorAccent);
-        RectTransform menuRt = menuBtn.GetComponent<RectTransform>();
-        menuRt.anchorMin = new Vector2(0.5f, 0.5f);
-        menuRt.anchorMax = new Vector2(0.5f, 0.5f);
-        menuRt.pivot = new Vector2(0.5f, 0.5f);
-        menuRt.sizeDelta = new Vector2(500, 150);
-        menuRt.anchoredPosition = new Vector2(0, -240);
-
-        ResultPopup popup = popupGo.AddComponent<ResultPopup>();
-        popup.backdrop = backdrop;
-        popup.panel = panelRt;
-        popup.titleText = title.GetComponent<TextMeshProUGUI>();
-        popup.nextButton = nextBtn;
-        popup.retryButton = retryBtn;
-        popup.menuButton = menuBtn;
-
-        popupGo.SetActive(false);
-
-        return popup;
     }
 
     private static RectTransform CreateText(Transform parent, string name, string text, float fontSize, Color color)

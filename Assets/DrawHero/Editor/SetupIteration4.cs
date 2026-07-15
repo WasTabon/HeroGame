@@ -141,75 +141,10 @@ public class SetupIteration4
         if (loader == null) loader = loaderGo.AddComponent<LevelLoader>();
         loader.database = db;
 
-        AddStarsToPopup();
-
-        GameObject lcGo = GameObject.Find("LevelController");
-        if (lcGo != null)
-        {
-            LevelController lc = lcGo.GetComponent<LevelController>();
-            Transform popupT = GameObject.Find("GameCanvas").transform.Find("ResultPopup");
-            if (lc != null && popupT != null)
-                lc.resultPopup = popupT.GetComponent<ResultPopup>();
-        }
-
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
 
         Debug.Log("DrawHero Iteration 4: Game scene now loads levels from data. Test enemies removed.");
-    }
-
-    private static void AddStarsToPopup()
-    {
-        GameObject canvasGo = GameObject.Find("GameCanvas");
-        if (canvasGo == null) return;
-
-        Transform popupT = canvasGo.transform.Find("ResultPopup");
-        if (popupT == null) return;
-
-        Transform panelT = popupT.Find("Panel");
-        if (panelT == null) return;
-
-        Transform existing = panelT.Find("StarRow");
-        if (existing != null)
-            Object.DestroyImmediate(existing.gameObject);
-
-        GameObject starRow = new GameObject("StarRow", typeof(RectTransform));
-        starRow.transform.SetParent(panelT, false);
-        RectTransform rowRt = starRow.GetComponent<RectTransform>();
-        rowRt.anchorMin = new Vector2(0.5f, 1f);
-        rowRt.anchorMax = new Vector2(0.5f, 1f);
-        rowRt.pivot = new Vector2(0.5f, 1f);
-        rowRt.sizeDelta = new Vector2(600, 180);
-        rowRt.anchoredPosition = new Vector2(0, -200);
-
-        Image[] stars = new Image[3];
-        float spacing = 190f;
-        for (int i = 0; i < 3; i++)
-        {
-            GameObject holder = new GameObject("StarHolder" + i, typeof(RectTransform));
-            holder.transform.SetParent(starRow.transform, false);
-            RectTransform hRt = holder.GetComponent<RectTransform>();
-            hRt.anchorMin = new Vector2(0.5f, 0.5f);
-            hRt.anchorMax = new Vector2(0.5f, 0.5f);
-            hRt.pivot = new Vector2(0.5f, 0.5f);
-            hRt.sizeDelta = new Vector2(160, 160);
-            hRt.anchoredPosition = new Vector2((i - 1) * spacing, i == 1 ? 20 : 0);
-
-            GameObject starGo = new GameObject("Star", typeof(RectTransform), typeof(Image));
-            starGo.transform.SetParent(holder.transform, false);
-            Image img = starGo.GetComponent<Image>();
-            img.sprite = GetStarSprite();
-            img.color = new Color(1f, 1f, 1f, 0.15f);
-            RectTransform sRt = starGo.GetComponent<RectTransform>();
-            sRt.anchorMin = Vector2.zero;
-            sRt.anchorMax = Vector2.one;
-            sRt.offsetMin = Vector2.zero;
-            sRt.offsetMax = Vector2.zero;
-            stars[i] = img;
-        }
-
-        ResultPopup popup = popupT.GetComponent<ResultPopup>();
-        popup.stars = stars;
     }
 
     [MenuItem("Tools/DrawHero/Setup Level Map (Iteration 4)")]
