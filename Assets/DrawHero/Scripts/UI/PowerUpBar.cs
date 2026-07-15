@@ -5,20 +5,27 @@ using DG.Tweening;
 
 public class PowerUpBar : MonoBehaviour
 {
-    private TextMeshProUGUI heavyCount;
-    private TextMeshProUGUI extraCount;
-    private TextMeshProUGUI bombCount;
+    public Button heavyButton;
+    public Button extraButton;
+    public Button bombButton;
 
-    private RectTransform heavyBtn;
-    private RectTransform extraBtn;
-    private RectTransform bombBtn;
+    public Image heavyIcon;
+    public Image extraIcon;
+    public Image bombIcon;
+
+    public TextMeshProUGUI heavyCount;
+    public TextMeshProUGUI extraCount;
+    public TextMeshProUGUI bombCount;
 
     private bool heavyActive;
     private bool bombActive;
 
     private void Start()
     {
-        Build();
+        heavyButton.onClick.AddListener(OnHeavy);
+        extraButton.onClick.AddListener(OnExtra);
+        bombButton.onClick.AddListener(OnBomb);
+
         Refresh();
 
         if (IAPManager.Instance != null)
@@ -39,45 +46,19 @@ public class PowerUpBar : MonoBehaviour
         Refresh();
     }
 
-    private void Build()
-    {
-        GameObject canvasGo = new GameObject("PowerUpCanvas");
-        canvasGo.transform.SetParent(transform);
-        Canvas canvas = canvasGo.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 400;
-        CanvasScaler scaler = canvasGo.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1080, 1920);
-        scaler.matchWidthOrHeight = 0.5f;
-        canvasGo.AddComponent<GraphicRaycaster>();
-
-        GameObject row = new GameObject("Row", typeof(RectTransform));
-        row.transform.SetParent(canvasGo.transform, false);
-        RectTransform rowRt = row.GetComponent<RectTransform>();
-        rowRt.anchorMin = new Vector2(0.5f, 0f);
-        rowRt.anchorMax = new Vector2(0.5f, 0f);
-        rowRt.pivot = new Vector2(0.5f, 0f);
-        rowRt.sizeDelta = new Vector2(700, 200);
-        rowRt.anchoredPosition = new Vector2(0, 40);
-
-        heavyBtn = CreateButton(row.transform, "HEAVY", new Color(0.5f, 0.5f, 0.6f), new Vector2(-230, 0), OnHeavy, out heavyCount);
-        extraBtn = CreateButton(row.transform, "INK+", new Color(0.35f, 0.7f, 0.4f), new Vector2(0, 0), OnExtra, out extraCount);
-        bombBtn = CreateButton(row.transform, "BOMB", new Color(0.9f, 0.3f, 0.2f), new Vector2(230, 0), OnBomb, out bombCount);
-    }
-
     private void Refresh()
     {
         heavyCount.text = "x" + PowerUpManager.GetHeavy();
         extraCount.text = "x" + PowerUpManager.GetExtra();
         bombCount.text = "x" + PowerUpManager.GetBomb();
 
-        SetHighlight(heavyBtn, heavyActive);
-        SetHighlight(bombBtn, bombActive);
+        SetHighlight(heavyButton.transform, heavyActive);
+        SetHighlight(bombButton.transform, bombActive);
     }
 
-    private void SetHighlight(RectTransform btn, bool active)
+    private void SetHighlight(Transform btn, bool active)
     {
+        btn.DOKill();
         btn.DOScale(active ? 1.15f : 1f, 0.2f).SetEase(Ease.OutBack);
     }
 
@@ -160,50 +141,5 @@ public class PowerUpBar : MonoBehaviour
             bombActive = false;
             Refresh();
         }
-    }
-
-    private RectTransform CreateButton(Transform parent, string label, Color color, Vector2 pos, UnityEngine.Events.UnityAction onClick, out TextMeshProUGUI countLabel)
-    {
-        GameObject go = new GameObject(label + "PU", typeof(RectTransform), typeof(Image), typeof(Button));
-        go.transform.SetParent(parent, false);
-        go.GetComponent<Image>().color = color;
-        RectTransform rt = go.GetComponent<RectTransform>();
-        rt.anchorMin = new Vector2(0.5f, 0.5f);
-        rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.pivot = new Vector2(0.5f, 0.5f);
-        rt.sizeDelta = new Vector2(180, 180);
-        rt.anchoredPosition = pos;
-
-        go.GetComponent<Button>().onClick.AddListener(onClick);
-
-        GameObject nameGo = new GameObject("Name", typeof(RectTransform));
-        nameGo.transform.SetParent(go.transform, false);
-        TextMeshProUGUI nameTmp = nameGo.AddComponent<TextMeshProUGUI>();
-        nameTmp.text = label;
-        nameTmp.fontSize = 30;
-        nameTmp.color = Color.white;
-        nameTmp.alignment = TextAlignmentOptions.Center;
-        nameTmp.fontStyle = FontStyles.Bold;
-        RectTransform nameRt = nameGo.GetComponent<RectTransform>();
-        nameRt.anchorMin = new Vector2(0, 0.4f);
-        nameRt.anchorMax = new Vector2(1, 1f);
-        nameRt.offsetMin = Vector2.zero;
-        nameRt.offsetMax = Vector2.zero;
-
-        GameObject countGo = new GameObject("Count", typeof(RectTransform));
-        countGo.transform.SetParent(go.transform, false);
-        countLabel = countGo.AddComponent<TextMeshProUGUI>();
-        countLabel.text = "x0";
-        countLabel.fontSize = 34;
-        countLabel.color = new Color(1f, 0.95f, 0.7f);
-        countLabel.alignment = TextAlignmentOptions.Center;
-        countLabel.fontStyle = FontStyles.Bold;
-        RectTransform countRt = countGo.GetComponent<RectTransform>();
-        countRt.anchorMin = new Vector2(0, 0f);
-        countRt.anchorMax = new Vector2(1, 0.4f);
-        countRt.offsetMin = Vector2.zero;
-        countRt.offsetMax = Vector2.zero;
-
-        return rt;
     }
 }
