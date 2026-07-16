@@ -4,9 +4,9 @@ public class LevelLoader : MonoBehaviour
 {
     public LevelDatabase database;
 
-    public Color enemyColor = new Color(0.85f, 0.30f, 0.35f, 1f);
-    public Color blockColor = new Color(0.30f, 0.30f, 0.45f, 1f);
-    public Color boxColor = new Color(0.55f, 0.40f, 0.25f, 1f);
+    public GameObject enemyPrefab;
+    public GameObject blockPrefab;
+    public GameObject boxPrefab;
 
     private LevelData activeLevel;
 
@@ -42,85 +42,86 @@ public class LevelLoader : MonoBehaviour
 
     private void SpawnEnemies()
     {
+        if (enemyPrefab == null)
+        {
+            Debug.LogError("LevelLoader: enemyPrefab is not assigned!");
+            return;
+        }
+
         GameObject root = new GameObject("Enemies");
 
         for (int i = 0; i < activeLevel.enemies.Count; i++)
         {
             EnemySpawn spawn = activeLevel.enemies[i];
 
-            GameObject enemy = new GameObject("Enemy");
-            enemy.transform.SetParent(root.transform);
-            enemy.transform.position = spawn.position;
+            GameObject instance = Instantiate(enemyPrefab, spawn.position, Quaternion.identity, root.transform);
+            instance.name = "Enemy_" + i;
 
-            SpriteRenderer sr = enemy.AddComponent<SpriteRenderer>();
-            sr.sprite = PrimitiveSprites.Circle();
-            sr.color = enemyColor;
-            sr.sortingOrder = 3;
-
-            Rigidbody2D body = enemy.AddComponent<Rigidbody2D>();
-            body.mass = 3f;
-            body.gravityScale = 1f;
-            body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-
-            CircleCollider2D col = enemy.AddComponent<CircleCollider2D>();
-            col.radius = 0.5f;
-
-            Enemy e = enemy.AddComponent<Enemy>();
-            e.maxHP = spawn.hp;
+            Enemy enemy = instance.GetComponent<Enemy>();
+            if (enemy != null)
+                enemy.maxHP = spawn.hp;
         }
     }
 
     private void SpawnBlocks()
     {
+        if (blockPrefab == null)
+        {
+            Debug.LogError("LevelLoader: blockPrefab is not assigned!");
+            return;
+        }
+
         GameObject root = new GameObject("Blocks");
 
         for (int i = 0; i < activeLevel.blocks.Count; i++)
         {
             BlockSpawn spawn = activeLevel.blocks[i];
 
-            GameObject block = new GameObject("Block");
-            block.transform.SetParent(root.transform);
-            block.transform.position = spawn.position;
-            block.transform.rotation = Quaternion.Euler(0, 0, spawn.rotation);
+            GameObject instance = Instantiate(blockPrefab, spawn.position,
+                Quaternion.Euler(0, 0, spawn.rotation), root.transform);
+            instance.name = "Block_" + i;
 
-            SpriteRenderer sr = block.AddComponent<SpriteRenderer>();
-            sr.sprite = PrimitiveSprites.Square();
-            sr.color = blockColor;
-            sr.drawMode = SpriteDrawMode.Sliced;
-            sr.size = spawn.size;
-            sr.sortingOrder = 1;
-
-            BoxCollider2D col = block.AddComponent<BoxCollider2D>();
-            col.size = spawn.size;
+            ApplySize(instance, spawn.size);
         }
     }
 
     private void SpawnBoxes()
     {
+        if (boxPrefab == null)
+        {
+            Debug.LogError("LevelLoader: boxPrefab is not assigned!");
+            return;
+        }
+
         GameObject root = new GameObject("Boxes");
 
         for (int i = 0; i < activeLevel.boxes.Count; i++)
         {
             BoxSpawn spawn = activeLevel.boxes[i];
 
-            GameObject box = new GameObject("Box");
-            box.transform.SetParent(root.transform);
-            box.transform.position = spawn.position;
+            GameObject instance = Instantiate(boxPrefab, spawn.position, Quaternion.identity, root.transform);
+            instance.name = "Box_" + i;
 
-            SpriteRenderer sr = box.AddComponent<SpriteRenderer>();
-            sr.sprite = PrimitiveSprites.Square();
-            sr.color = boxColor;
-            sr.drawMode = SpriteDrawMode.Sliced;
-            sr.size = spawn.size;
-            sr.sortingOrder = 2;
+            ApplySize(instance, spawn.size);
 
-            Rigidbody2D body = box.AddComponent<Rigidbody2D>();
-            body.mass = spawn.mass;
-            body.gravityScale = 1f;
-            body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-
-            BoxCollider2D col = box.AddComponent<BoxCollider2D>();
-            col.size = spawn.size;
+            Rigidbody2D body = instance.GetComponent<Rigidbody2D>();
+            if (body != null)
+                body.mass = spawn.mass;
         }
+    }
+
+    private void ApplySize(GameObject instance, Vector2 size)
+    {
+        SpriteRenderer sr = instance.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            if (sr.drawMode == SpriteDrawMode.Simple)
+                sr.drawMode = SpriteDrawMode.Sliced;
+            sr.size = size;
+        }
+
+        BoxCollider2D col = instance.GetComponent<BoxCollider2D>();
+        if (col != null)
+            col.size = size;
     }
 }

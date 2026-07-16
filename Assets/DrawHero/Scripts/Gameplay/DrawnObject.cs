@@ -11,6 +11,8 @@ public class DrawnObject : MonoBehaviour
     private bool isBomb;
     private bool bombTriggered;
 
+    public Sprite segmentSprite;
+
     public void Build(List<Vector2> worldPoints, Color color)
     {
         Build(worldPoints, color, false, false);
@@ -60,7 +62,7 @@ public class DrawnObject : MonoBehaviour
             capsule.size = new Vector2(segLength + LineThickness, LineThickness);
 
             SpriteRenderer sr = segGo.AddComponent<SpriteRenderer>();
-            sr.sprite = PrimitiveSprites.Square();
+            sr.sprite = segmentSprite != null ? segmentSprite : PrimitiveSprites.Square();
             sr.color = bomb ? new Color(0.9f, 0.3f, 0.2f) : (heavy ? new Color(0.5f, 0.5f, 0.6f) : color);
             sr.drawMode = SpriteDrawMode.Sliced;
             sr.size = new Vector2(segLength + LineThickness, LineThickness);

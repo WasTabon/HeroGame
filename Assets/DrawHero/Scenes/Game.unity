@@ -475,6 +475,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawColor: {r: 0.961, g: 0.651, b: 0.137, a: 1}
+  inkSprite: {fileID: 0}
   minPointDistance: 0.15
 --- !u!4 &138850347
 Transform:
@@ -3237,9 +3238,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   database: {fileID: 11400000, guid: ab5a769ae2d4d7a45993b91c080310a9, type: 2}
-  enemyColor: {r: 0.85, g: 0.3, b: 0.35, a: 1}
-  blockColor: {r: 0.3, g: 0.3, b: 0.45, a: 1}
-  boxColor: {r: 0.55, g: 0.4, b: 0.25, a: 1}
+  enemyPrefab: {fileID: 2328237331580786190, guid: 37033cd456fbbc942aa34fb3c90ae05d, type: 3}
+  blockPrefab: {fileID: 6102744503444332456, guid: 6193f45ad33993b4ab979fed0a300c04, type: 3}
+  boxPrefab: {fileID: 3221914046149899157, guid: 1c643a757a2b5cf478668dd5690aec85, type: 3}
 --- !u!4 &1515568383
 Transform:
   m_ObjectHideFlags: 0

@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 public class DrawingController : MonoBehaviour
 {
     public Color drawColor = new Color(0.961f, 0.651f, 0.137f, 1f);
+    public Sprite inkSprite;
     public float minPointDistance = 0.15f;
 
     private Camera cam;
@@ -106,6 +107,7 @@ public class DrawingController : MonoBehaviour
 
         GameObject go = new GameObject("DrawnObject");
         DrawnObject drawn = go.AddComponent<DrawnObject>();
+        drawn.segmentSprite = inkSprite;
         drawn.Build(new List<Vector2>(points), drawColor, heavy, bomb);
 
         PowerUpManager.ClearPendingDrawFlags();
